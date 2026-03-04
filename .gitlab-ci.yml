@@ -75,11 +75,7 @@ release:
       when: manual
   before_script: []
   script:
-    - echo "Creating release for version $VERSION"
+    - echo "Creating release v0.1.$CI_PIPELINE_IID"
   release:
     tag_name: 'v0.1.$CI_PIPELINE_IID'
-    description: 'Release v0.1.$CI_PIPELINE_IID'
-    assets:
-      links:
-        - name: 'Docker Image'
-          url: '$CI_REGISTRY_IMAGE:latest'
+    description: 'Release v0.1.$CI_PIPELINE_IID - Docker image available at https://gitlab.com/ziad.elm19/gemini-api/container_registry'
