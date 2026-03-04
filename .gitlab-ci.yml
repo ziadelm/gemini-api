@@ -1,0 +1,51 @@
+# .gitlab-ci.yml
+image: python:3.12-slim
+
+stages:
+  - validate
+  - test
+  - build
+  - release
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+
+before_script:
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+
+# STAGE: VALIDATE
+lint:
+  stage: validate
+  script:
+    - pip install flake8
+    - flake8 app/ --max-line-length=120 --exclude=__pycache__
+
+format-check:
+  stage: validate
+  script:
+    - pip install black
+    - black --check app/
+
+security-check:
+  stage: validate
+  script:
+    - pip install bandit
+    - bandit -r app/ -ll
+
+secrets-check:
+  stage: validate
+  script:
+    - pip install detect-secrets
+    - detect-secrets scan --baseline .secrets.baseline || true
+
+# STAGE: TEST
+unit-test:
+  stage: test
+  script:
+    - pytest tests/ -v
+
