@@ -65,3 +65,21 @@ build-docker:
     - docker push $DOCKER_IMAGE_LATEST
   only:
     - main
+
+# STAGE: RELEASE
+release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TAG == null'
+      when: manual
+  before_script: []
+  script:
+    - echo "Creating release for version $VERSION"
+  release:
+    tag_name: 'v0.1.$CI_PIPELINE_IID'
+    description: 'Release v0.1.$CI_PIPELINE_IID'
+    assets:
+      links:
+        - name: 'Docker Image'
+          url: '$CI_REGISTRY_IMAGE:latest'
